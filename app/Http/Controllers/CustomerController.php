@@ -87,7 +87,7 @@ class CustomerController extends Controller
         $customer = current($customer);
         if (empty($customer)) {
             return response()->json([
-                'status' => true,
+                'status' => false,
                 'message' => 'Id não encontrado!',
                 'data' => array(),
                 '_links' => [
@@ -120,5 +120,51 @@ class CustomerController extends Controller
                 '_getAll' => ""
             )
         ], 200);
+    }
+
+    public function deleteCustumerById(string $id) {
+
+        $custumer = Customer::find($id);
+        if (!$custumer) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Id não encontrado!',
+                'data' => array(),
+                '_links' => [
+                    '_self' => "",
+                    '_update' => "",
+                    '_create' => "",
+                    '_delete' => "",
+                    '_getAll' => ""
+                ]
+            ], 400);
+        } 
+
+        $destroy = Customer::destroy($id);
+        if (!$destroy) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Erro ao tentar excluir Id!',
+                'data' => array(),
+                '_links' => [
+                    '_self' => "",
+                    '_update' => "",
+                    '_create' => "",
+                    '_delete' => "",
+                    '_getAll' => ""
+                ]
+            ], 500);
+        }
+        
+        return response()->json([
+            'status' => true,
+            'message' => 'Id excluido com sucesso!',
+            'id' => $id,
+            '_links' => array(
+                '_create' => "",
+                '_getAll' => ""
+            )
+        ], 200);
+
     }
 }

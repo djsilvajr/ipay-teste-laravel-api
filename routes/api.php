@@ -15,17 +15,8 @@ use App\Http\Controllers\CustomerController;
 |
 */
 
-//função criada no inicio do projeto
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 //clientes
 //função para cadartrar clientes
-//Route::post('/Customer/Cadastro', [CustomerController::class, 'cadastro']);
 Route::post('/Customer/Cadastro', [CustomerController::class, 'cadastro']);
 Route::get('/Customer/{id}', [CustomerController::class, 'getCustumerById']);
-
-Route::post('/test', function () {
-    return 'POST method accepted';
-});
+Route::delete('/Customer/{id}', [CustomerController::class, 'deleteCustumerById']);
