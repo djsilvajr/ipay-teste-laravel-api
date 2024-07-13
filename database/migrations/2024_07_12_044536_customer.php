@@ -16,6 +16,7 @@ class Customer extends Migration
         Schema::create('customer', function (Blueprint $table) {
             $table->id()->comment('Chave primeira da tabela de clientes.'); 
             $table->string('name')->comment('Nome do cliente.');
+            $table->bigInteger('cpf')->unique();
             $table->date('birth_date')->comment('data de nascimento do cliente.');
             $table->string('email')->unique()->comment('Email do cliente.');
             $table->enum('gender', ['M', 'F'])->comment('Genero do cliente M para masculino e F para feminino.');
@@ -30,6 +31,6 @@ class Customer extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('customers');
+        Schema::dropIfExists('customer');
     }
 }
