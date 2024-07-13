@@ -24,6 +24,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //função para cadartrar clientes
 //Route::post('/Customer/Cadastro', [CustomerController::class, 'cadastro']);
 Route::post('/Customer/Cadastro', [CustomerController::class, 'cadastro']);
+Route::get('/Customer/{id}', [CustomerController::class, 'getCustumerById']);
 
 Route::post('/test', function () {
     return 'POST method accepted';

@@ -23,4 +23,10 @@ class Customer extends Model
         return self::where('cpf', $cpf)
                    ->get()->toArray();
     }
+
+    public static function getCustomerById($id)
+    {
+        return self::where('id', $id)
+                   ->get()->toArray();
+    }
 }

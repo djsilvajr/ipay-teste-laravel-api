@@ -6,6 +6,7 @@ use App\Http\Requests\CustomerCadastroRequest;
 use Illuminate\Http\Request;
 
 use App\Models\Customer;
+use Ramsey\Uuid\Type\Integer;
 
 class CustomerController extends Controller
 {
@@ -60,10 +61,10 @@ class CustomerController extends Controller
         $data = array(
             'id' => $customer,
             'cpf' => $cpf,
-            'name' => $name,
-            'birth_date' => $birth_date,
+            'nome' => $name,
+            'data_nascimento' => $birth_date,
             'email' => $email,
-            'gender' => $gender
+            'genero' => $gender
         );
 
         return response()->json([
@@ -78,5 +79,46 @@ class CustomerController extends Controller
                 '_getAll' => ""
             )
         ], 201);
+    }
+
+    public function getCustumerById(string $id) {
+
+        $customer = Customer::getCustomerById($id);
+        $customer = current($customer);
+        if (empty($customer)) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Id não encontrado!',
+                'data' => array(),
+                '_links' => [
+                    '_self' => "",
+                    '_update' => "",
+                    '_create' => "",
+                    '_delete' => "",
+                    '_getAll' => ""
+                ]
+            ], 400);
+        }
+
+        $response_data = array(
+            "id" => $customer['id'],
+			"nome" => $customer['name'],
+			"cpf" => $customer['cpf'],
+			"data_nascimento" => $customer['birth_date'],
+			"email" => $customer['email'],
+			"genero" => $customer['gender']
+        );
+
+        return response()->json([
+            'status' => true,
+            'data' => $response_data,
+            '_links' => array(
+                '_self' => "",
+                '_update' => "",
+                '_create' => "",
+                '_delete' => "",
+                '_getAll' => ""
+            )
+        ], 200);
     }
 }
