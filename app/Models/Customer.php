@@ -24,9 +24,24 @@ class Customer extends Model
                    ->get()->toArray();
     }
 
+    public static function getCustomerByCpfAndEmail($cpf, $email)
+    {
+        return self::where('cpf', $cpf)
+                   ->orWhere('email', $email)
+                   ->get()->toArray();
+    }
+
     public static function getCustomerById($id)
     {
         return self::where('id', $id)
                    ->get()->toArray();
+    }
+
+    public static function getCustomers($pageSize)
+    {
+        $query = Customer::query();
+        return $query->orderBy('name') 
+                           ->paginate($pageSize); 
+
     }
 }

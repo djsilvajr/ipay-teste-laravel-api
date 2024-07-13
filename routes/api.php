@@ -20,3 +20,5 @@ use App\Http\Controllers\CustomerController;
 Route::post('/Customer/Cadastro', [CustomerController::class, 'cadastro']);
 Route::get('/Customer/{id}', [CustomerController::class, 'getCustumerById']);
 Route::delete('/Customer/{id}', [CustomerController::class, 'deleteCustumerById']);
+Route::put('/Customer/Atualiza/{id}', [CustomerController::class, 'updateCustomerById']);
+Route::get('/Customer', [CustomerController::class, 'getCustumers']);

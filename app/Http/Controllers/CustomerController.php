@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CustomerCadastroRequest;
+use App\Http\Requests\CustomerUpdateRequest;
 use Illuminate\Http\Request;
 
 use App\Models\Customer;
@@ -19,11 +20,22 @@ class CustomerController extends Controller
         $email = $request_data['email'];
         $gender = $request_data['genero'];
 
-        $customer = Customer::getCustomerByCpf($cpf);
+        $customer = Customer::getCustomerByCpfAndEmail($cpf, $email);
+        $mensagem = "";
+
+
         if (!empty(current($customer))) {
+
+            if (current($customer)["email"] == $email) {
+                $mensagem = "Email já cadastrado!";
+            }
+            if (current($customer)["cpf"] == $cpf) {
+                $mensagem = "Cpf já cadastrado!";
+            }
+
             return response()->json([
-                'status' => true,
-                'message' => 'Cpf já cadastrado!',
+                'status' => false,
+                'message' => $mensagem,
                 'data' => current($customer),
                 '_links' => [
                     '_self' => "",
@@ -124,8 +136,8 @@ class CustomerController extends Controller
 
     public function deleteCustumerById(string $id) {
 
-        $custumer = Customer::find($id);
-        if (!$custumer) {
+        $customer = Customer::find($id);
+        if (!$customer) {
             return response()->json([
                 'status' => false,
                 'message' => 'Id não encontrado!',
@@ -165,6 +177,84 @@ class CustomerController extends Controller
                 '_getAll' => ""
             )
         ], 200);
+
+    }
+
+    public function updateCustomerById(CustomerUpdateRequest $request, string $id)
+    {
+
+        $customer = Customer::find($id);
+        if (!$customer) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Id não encontrado!',
+                'data' => array(),
+                '_links' => [
+                    '_self' => "",
+                    '_update' => "",
+                    '_create' => "",
+                    '_delete' => "",
+                    '_getAll' => ""
+                ]
+            ], 400);
+        } 
+
+        $request_data = $request->all();
+        $cpf = $request_data['cpf'];
+        $name = $request_data['nome']." ".$request_data['sobrenome'];
+        $birth_date = $request_data['data_nascimento'];
+        $email = $request_data['email'];
+        $gender = $request_data['genero'];
+
+
+        $customer->name = $name;
+        $customer->cpf = $cpf;
+        $customer->birth_date = $birth_date;
+        $customer->email = $email;
+        $customer->gender = $gender;
+        $customer->updated_at = now();  
+        $customer->save();  
+
+        $data = array(
+            'id' => $id,
+            'cpf' => $cpf,
+            'nome' => $name,
+            'data_nascimento' => $birth_date,
+            'email' => $email,
+            'genero' => $gender
+        );
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Cliente atualizado com sucesso!',
+            'data' => $data,
+            '_links' => array(
+                '_self' => "",
+                '_update' => "",
+                '_create' => "",
+                '_delete' => "",
+                '_getAll' => ""
+            )
+        ], 200);
+    }
+
+    public function getCustumers(Request $request)
+    {
+
+        $messages = [
+            'pageSize.integer' => 'Tamanho da pagina deve ser um inteiro.',
+            'pageSize.max' => 'Tamanho máximo de pagina é 100.',
+        ];
+
+        $validated = $request->validate([
+            'pageSize' => 'integer|max:100'
+        ]);
+        
+        $pageSize = $request->query('pageSize', 15); 
+
+        $customers = Customer::getCustomers($pageSize);
+
+        return response()->json($customers);
 
     }
 }
