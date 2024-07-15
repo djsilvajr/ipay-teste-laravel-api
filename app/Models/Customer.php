@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
@@ -39,9 +40,26 @@ class Customer extends Model
 
     public static function getCustomers($pageSize)
     {
-        $query = Customer::query();
-        return $query->orderBy('name') 
-                           ->paginate($pageSize); 
+        $customers = DB::table('customer')
+        ->select('id', 'name', 'cpf', 'birth_date', 'email', 'gender', 'created_at', 'updated_at')
+        ->get();
+
+        $processedCustomers = $customers->map(function($customer) {
+            $nameParts = explode(' ', $customer->name);
+
+            // Verifica se há pelo menos duas partes (nome e sobrenome)
+            if (count($nameParts) >= 2) {
+                $customer->name = $nameParts[0];
+                $customer->surname = implode(' ', array_slice($nameParts, 1));
+            } else {
+                $customer->name = $customer->name;
+                $customer->surname = '';
+            }
+
+            return $customer;
+        });
+
+    return response()->json($processedCustomers);
 
     }
 }

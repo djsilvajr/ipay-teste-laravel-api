@@ -38,11 +38,8 @@ class CustomerController extends Controller
                 'message' => $mensagem,
                 'data' => current($customer),
                 '_links' => [
-                    '_self' => "",
-                    '_update' => "",
-                    '_create' => "",
-                    '_delete' => "",
-                    '_getAll' => ""
+                    '_self' => "http://127.0.0.1:8000/api/Customer/Cadastro",
+                    '_getAll' => "http://127.0.0.1:8000/api/Customer?page=1&pageSize=10"
                 ]
             ], 409);
         }
@@ -60,13 +57,10 @@ class CustomerController extends Controller
                 'status' => false,
                 'message' => 'Erro ao cadastrar cliente.',
                 'data' => array(),
-                '_links' => array(
-                    '_self' => "",
-                    '_update' => "",
-                    '_create' => "",
-                    '_delete' => "",
-                    '_getAll' => ""
-                )
+                '_links' => [
+                    '_self' => "http://127.0.0.1:8000/api/Customer/Cadastro",
+                    '_getAll' => "http://127.0.0.1:8000/api/Customer?page=1&pageSize=10"
+                ]
             ], 500);
         }
 
@@ -84,11 +78,10 @@ class CustomerController extends Controller
             'message' => 'Cliente registrado com sucesso!',
             'data' => $data,
             '_links' => array(
-                '_self' => "",
-                '_update' => "",
-                '_create' => "",
-                '_delete' => "",
-                '_getAll' => ""
+                '_self' => "http://127.0.0.1:8000/api/Customer/Cadastro",
+                '_update' => "http://127.0.0.1:8000/api/Customer/Atualiza/{".$data["id"]."}",
+                '_delete' => "http://127.0.0.1:8000/api/Customer/{".$data["id"]."}",
+                '_getAll' => "http://127.0.0.1:8000/api/Customer?page=1&pageSize=10"
             )
         ], 201);
     }
@@ -112,9 +105,14 @@ class CustomerController extends Controller
             ], 400);
         }
 
+        $nameParts = explode(' ', $customer['name']);
+        $name = $nameParts[0];
+        $nickname = implode(' ', array_slice($nameParts, 1));
+
         $response_data = array(
             "id" => $customer['id'],
-			"nome" => $customer['name'],
+            'nome' => $name,
+            'sobrenome' => $nickname,
 			"cpf" => $customer['cpf'],
 			"data_nascimento" => $customer['birth_date'],
 			"email" => $customer['email'],
@@ -208,6 +206,10 @@ class CustomerController extends Controller
 
 
         $customer->name = $name;
+        $nameParts = explode(' ', $customer->name);
+        $name = $nameParts[0];
+        $nickname = implode(' ', array_slice($nameParts, 1));
+
         $customer->cpf = $cpf;
         $customer->birth_date = $birth_date;
         $customer->email = $email;
@@ -219,6 +221,7 @@ class CustomerController extends Controller
             'id' => $id,
             'cpf' => $cpf,
             'nome' => $name,
+            'sobrenome' => $nickname,
             'data_nascimento' => $birth_date,
             'email' => $email,
             'genero' => $gender
